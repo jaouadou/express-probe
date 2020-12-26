@@ -1,0 +1,19 @@
+# Env
+.env.example
+
+# Eslint
+.eslintrc.json
+
+# Logs
+*.log
+
+# Mix
+LICENSE
+README.md
+.gitignore
+
+# Serverless
+.vercel
+vercerl.json
+.vercelignore
+.serverless
