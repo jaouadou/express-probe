@@ -17,15 +17,29 @@ export const httpStatus = {
   serverError: 500,
 }
 
-export const mapCodeToMessage = {
-  200: 'ok',
-  201: 'created',
-  400: 'bad request',
-  401: 'unauthorized',
-  403: 'action forbidden',
-  404: 'not found',
-  409: 'conflict with preexisting data',
-  412: 'precondition failed',
-  422: 'unprocessable entitie',
-  500: 'server error',
+export const mapCodeToMessage = (code: number): string => {
+  switch (code) {
+    case 200:
+      return 'ok'
+    case 201:
+      return 'created'
+    case 400:
+      return 'bad request'
+    case 401:
+      return 'unauthorized'
+    case 403:
+      return 'action forbidden'
+    case 404:
+      return 'not found'
+    case 409:
+      return 'conflict with preexisting data'
+    case 412:
+      return 'precondition failed'
+    case 422:
+      return 'unprocessable entitie'
+    case 500:
+      return 'server error'
+    default:
+      return 'server error'
+  }
 }

@@ -34,11 +34,11 @@ export class Logger {
   public static DEFAULT_SCOPE = 'app'
 
   public static info(message: string, ...args: any[]): void {
-    winston.info(`[app] ${message}`, args)
+    winston.info(`[App] ${message}`, args)
   }
 
   public static error(message: string, ...args: any[]): void {
-    winston.error('[app]', message, args)
+    winston.error(`[Error] ${message}`, args)
   }
 
   private static parsePathToScope(filepath: string): string {
