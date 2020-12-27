@@ -9,7 +9,7 @@ export const getOsEnv = (name: string, _default?: string): string|never => {
 
   if (typeof envValue === 'undefined') {
     if (_default) return _default
-    throw new Error(`${name} is not in ENV variables`)
+    throw new Error(`${name} is not in porcess.env variables`)
   }
 
   return envValue
