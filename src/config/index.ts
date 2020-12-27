@@ -22,9 +22,14 @@ export default {
       ? getOsEnv('MONGO_URL_TEST')
       : getOsEnv('MONGO_URL'),
   },
+  redis: {
+    URL: getOsEnv('REDIS_URL'),
+    HOST: getOsEnv('REDIS_HOST', ''),
+    PORT: getOsEnv('REDIS_PORT', '6379'),
+    PASSWORD: getOsEnv('REDIS_PASSWORD', ''),
+  },
   secutity: {
     SECRET: getOsEnv('SECRET', 'devSecret'),
-    HASH_ALGORITHMS: parseToArray(getOsEnv('HASH_ALGORITHMS', '[SHA256]')),
   },
   mailing: {
     API_KEY: getOsEnv('MAILGUN_API_KEY'),
