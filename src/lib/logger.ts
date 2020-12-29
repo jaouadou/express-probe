@@ -34,11 +34,11 @@ export class Logger {
   public static DEFAULT_SCOPE = 'app'
 
   public static info(message: string, ...args: any[]): void {
-    winston.info(`[App] ${message}`, args)
+    winston.info(`[App]--> ${message}  |  `, args)
   }
 
-  public static error(message: string, ...args: any[]): void {
-    winston.error(`[Error] ${message}`, args)
+  public static error(message: string | undefined, ...args: any[]): void {
+    winston.error(`[Error]--> ${message}  |  `, args)
   }
 
   private static parsePathToScope(filepath: string): string {
@@ -62,7 +62,7 @@ export class Logger {
 
   private log(level: LogLevel, message: string|number, args: any[]): void {
     if (winston) {
-      winston[level](`[${this.scope}] ${message}`, args)
+      winston[level](`[${this.scope}]--> ${message}  |  `, args)
     }
   }
 
