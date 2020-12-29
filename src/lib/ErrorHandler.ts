@@ -6,6 +6,7 @@
  */
 
 import { ApiError } from './ApiError'
+import { Logger } from './logger'
 
 export class ErrorHandler {
   public static async handlError(errorObject: ApiError): Promise<ApiError> {
@@ -18,5 +19,11 @@ export class ErrorHandler {
     await error.sendEmailIfOperational()
 
     return error
+  }
+
+  public static handleFatalError(err: Error): never {
+    Logger.error(err.message)
+    Logger.error(err.stack)
+    process.exit(1)
   }
 }
