@@ -7,7 +7,13 @@
  * object.
  */
 
-import { getOsEnv, parseToArray } from './utils'
+import * as path from 'path'
+import dotenv from 'dotenv'
+import { getOsEnv } from './utils'
+
+dotenv.config({
+  path: path.resolve(__dirname, `../../.env.${process.env.NODE_ENV}`),
+})
 
 export default {
   app: {
@@ -24,9 +30,9 @@ export default {
   },
   redis: {
     URL: getOsEnv('REDIS_URL'),
-    HOST: getOsEnv('REDIS_HOST', ''),
+    HOST: getOsEnv('REDIS_HOST', 'localhost'),
     PORT: getOsEnv('REDIS_PORT', '6379'),
-    PASSWORD: getOsEnv('REDIS_PASSWORD', ''),
+    PASSWORD: getOsEnv('REDIS_PASSWORD', 'redis'),
   },
   secutity: {
     SECRET: getOsEnv('SECRET', 'devSecret'),
