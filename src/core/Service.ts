@@ -43,11 +43,12 @@ export class Service {
     }
   }
 
-  async getOne(query: { field: string, value: any }) {
+  async getOne(query: GenericObject) {
     try {
-      let item = await this.cache.get(query.value)
+      const key = this._buildGetKey(query)
+      let item = await this.cache.get(key)
       if (!item) {
-        item = await this.model.findOne({ [query.field]: query.value })
+        item = await this.model.findOne(query)
         if (!item) ApiError.raise.notFound(`${this.conf.name} not found`)
         await this.cache.upsert(item, query.value)
       }
@@ -66,9 +67,9 @@ export class Service {
     }
   }
 
-  async update(data: GenericObject, query: { field: string, value: any}) {
+  async update(data: GenericObject, query: GenericObject) {
     try {
-      const item = (await this.model.findOne({ [query.field]: query.value }) as GenericDocument)
+      const item = (await this.model.findOne(query) as GenericDocument)
       if (!item) ApiError.raise.notFound(`${this.conf.name} not found`)
       Object.keys(data).forEach((key) => {
         if (data[key] !== undefined) item[key] = data[key]
@@ -81,9 +82,9 @@ export class Service {
     }
   }
 
-  async delete(query: { field: string, value: any }) {
+  async delete(query: GenericObject) {
     try {
-      const item = await this.model.findOneAndDelete({ [query.field]: query.value })
+      const item = await this.model.findOneAndDelete(query)
       if (item) {
         this.cache.delete(query.value)
         return null
@@ -103,9 +104,15 @@ export class Service {
     return { skip, limit }
   }
 
-  private _buildListKey(skip: number, limit: number) {
+  private _buildListKey(skip: number, limit: number): string {
     let key = `${skip}`
     if (limit) key += `_${limit}`
     return key
+  }
+
+  private _buildGetKey(query: GenericObject): string {
+    const keys: string[] = []
+    Object.keys(query).forEach((_key) => keys.push(_key))
+    return keys.join('_')
   }
 }
