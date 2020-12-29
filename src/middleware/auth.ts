@@ -10,6 +10,7 @@ import { Request, Response, NextFunction } from 'express'
 import { IUserProps, User } from '../api/users'
 import { JWT, scopes, tokenTypes } from '../auth'
 import { ApiError } from '../lib'
+import { RequesDataLocation } from '../interfaces'
 
 const getTokenFromHeader = (req: Request) => {
   const authorization = req.headers && req.headers.authorization
@@ -58,13 +59,13 @@ export class Auth {
   private static _isOwner(
     req: Request,
     field:string = 'id',
-    where: 'params' | 'query' | 'body' = 'params'
+    where: RequesDataLocation,
   ) {
     const userIdentifier = req[where][field]
     return userIdentifier === req.user?.id
   }
 
-  static isOwner(field: string = 'id', where: 'params' | 'query' | 'body' = 'params') {
+  static isOwner(field: string = 'id', where: RequesDataLocation) {
     return (req: Request, res: Response, next: NextFunction) => {
       try {
         if (this._isOwner(req, field, where)) return next()
@@ -75,7 +76,7 @@ export class Auth {
     }
   }
 
-  static isOwnerOrSatff(field: string = 'id', where: 'params' | 'query' | 'body' = 'params') {
+  static isOwnerOrSatff(field: string = 'id', where: RequesDataLocation) {
     return (req: Request, res: Response, next: NextFunction) => {
       try {
         const type = req.user?.type
@@ -89,7 +90,7 @@ export class Auth {
     }
   }
 
-  static isOwnerOrSuperAdmin(field: string = 'id', where: 'params' | 'query' | 'body' = 'params') {
+  static isOwnerOrSuperAdmin(field: string = 'id', where: RequesDataLocation) {
     return (req: Request, res: Response, next: NextFunction) => {
       try {
         if (this._isOwner(req, field, where) || req.user?.type === scopes.SUPER_ADMIN) {

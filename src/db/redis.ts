@@ -10,12 +10,12 @@ import redis from 'redis'
 import config from '../config'
 import { ErrorHandler, Logger } from '../lib'
 
-export const client = redis.createClient(config.redis.URL)
+export const redisClient = redis.createClient(config.redis.URL)
 
-client.on('ready', () => {
+redisClient.on('ready', () => {
   Logger.info('Redis connected')
 })
 
-client.on('error', (err) => {
+redisClient.on('error', (err) => {
   ErrorHandler.handlError(err)
 })
