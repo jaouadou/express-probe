@@ -1,11 +1,13 @@
 /**
- * Type parsers utilities
- * ----------------------
+ * Type parsers utilities.
+ * -----------------------
  */
 
 export const parseToBool = (value: string|number): boolean => {
-  if ((value === 'false' || value === 0) && !value) return false
-  if (value === 'true' || value === 1) return true
+  const falseValues = ['false', 'undefined', 'null', '', 0]
+  const trueValues = ['true', '1', 1]
+  if (falseValues.includes(value)) return false
+  if (trueValues.includes(value)) return true
   return true
 }
 
