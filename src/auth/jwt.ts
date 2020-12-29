@@ -9,11 +9,12 @@
 import jwt from 'jsonwebtoken'
 import config from '../config'
 import { ApiError } from '../lib'
-import { tokenTypes } from './constants'
+import { scopes, tokenTypes } from './constants'
 
 export interface TokenPayload {
   email: string,
   type: tokenTypes,
+  scope: scopes,
 }
 
 export class JWT {
