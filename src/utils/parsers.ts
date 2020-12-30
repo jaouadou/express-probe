@@ -3,6 +3,8 @@
  * -----------------------
  */
 
+import { GenericObject } from '../interfaces'
+
 export const parseToBool = (value: string|number): boolean => {
   const falseValues = ['false', 'undefined', 'null', '', 0]
   const trueValues = ['true', '1', 1]
@@ -17,4 +19,4 @@ export const parseToArray = (value: string): Array<string|number> => {
   return strValues.split(',')
 }
 
-export const cloneObject = (obj: object): object => JSON.parse(JSON.stringify(obj))
+export const cloneObject = (obj: GenericObject): GenericObject => JSON.parse(JSON.stringify(obj))

@@ -13,8 +13,8 @@ import { scopes, tokenTypes } from './constants'
 
 export interface TokenPayload {
   email: string,
-  type: tokenTypes,
   scope: scopes,
+  type?: tokenTypes,
 }
 
 export class JWT {
@@ -23,6 +23,7 @@ export class JWT {
   static async sign(payload: TokenPayload, expiration?: string): Promise<string> {
     return new Promise((resolve, reject) => {
       try {
+        payload.type = payload.type ? payload.type : tokenTypes.AUTH
         const token = jwt.sign(payload, config.secutity.SECRET, {
           algorithm: 'HS256',
           expiresIn: expiration || this.DEFAULT_EXPIRATION_TIME,
