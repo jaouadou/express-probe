@@ -45,10 +45,16 @@ export class Auth {
     }
   }
 
-  static is(userType: scopes) {
+  static is(userType: scopes | scopes[]) {
     return (req: Request, res: Response, next: NextFunction) => {
       try {
-        if (req.user?.type === userType) return next()
+        let types: scopes[]
+        if (typeof userType === 'string') {
+          types = [userType]
+        } else {
+          types = [...userType]
+        }
+        if (types.includes(req.user?.type as scopes)) return next()
         ApiError.raise.forbidden()
       } catch (error) {
         return next(error)
