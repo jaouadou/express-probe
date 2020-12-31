@@ -23,6 +23,10 @@ export default {
     IS_PRODUCTION: getOsEnv('NODE_ENV') === 'production',
     IS_TEST: getOsEnv('NODE_ENV') === 'test',
   },
+  api: {
+    CACHE_SECONDS: Number(getOsEnv('CACHE_SECONDS', '20')),
+    DEFAULT_PAGINATION_LIMIT: Number(getOsEnv('DEFAULT_PAGINATION_LIMIT', '50')),
+  },
   db: {
     URL: getOsEnv('NODE_ENV') === 'test'
       ? getOsEnv('MONGO_URL_TEST')
