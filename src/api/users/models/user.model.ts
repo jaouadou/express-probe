@@ -29,6 +29,7 @@ const UserSchema: Schema = new Schema({
     getters: true,
     transform: function(doc, ret) {
       delete ret.password
+      delete ret.__v
     },
   },
 })
