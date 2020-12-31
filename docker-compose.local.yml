@@ -18,7 +18,7 @@ services:
     depends_on:
       - db
       - redis
-    command: bash -c "ts-node-dev --respawn --transpileOnly ./src/index.ts"
+    command: bash -c "npx ts-node-dev --respawn ./src/index.ts"
   db:
     container_name: db
     image: mongo:4.4
