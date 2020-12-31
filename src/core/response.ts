@@ -13,7 +13,7 @@ import config from '../config'
 
 export type SuccessResponse = Response<GenericObject>
 export type ErrorResponse = Response<GenericObject>
-export type DataResponse = GenericObject | GenericObject[]
+export type DataResponse = GenericObject | GenericObject[] | undefined
 
 export const successResponse = (
   req: Request,
