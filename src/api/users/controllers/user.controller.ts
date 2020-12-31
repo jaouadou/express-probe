@@ -75,8 +75,8 @@ export class UserController extends Controller {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params
-      const data = await this.service.delete({ id })
-      return successResponse(req, res, data, httpStatus.ok, 'user deleted')
+      await this.service.delete({ id })
+      return successResponse(req, res, {}, httpStatus.ok, 'user deleted')
     } catch (error) {
       next(error)
     }

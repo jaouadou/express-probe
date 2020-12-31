@@ -8,12 +8,12 @@
 import { UserController } from './controllers'
 import { UserLoginDTO, UsertCreateDTO, UserSignupDTO, UserUpdateDTO, RefreshTokenDTO } from './DTO'
 import { RouterBase } from '../../core'
-import { Auth, Validate } from '../../middleware'
+import { Auth, Validate, RequestLimiter } from '../../middleware'
 import { scopes } from '../../auth'
 
 export class UserRouter extends RouterBase {
   constructor(
-    private controller: UserController = new UserController()
+    private controller: UserController = new UserController(),
   ) {
     super('users')
     this.initializeRouter()
@@ -36,18 +36,21 @@ export class UserRouter extends RouterBase {
 
     this._router.post(
       '/signup',
+      RequestLimiter(3),
       Validate.inBody(UserSignupDTO),
       this.controller.signup,
     )
 
     this._router.post(
       '/refresh-token',
+      RequestLimiter(3),
       Validate.inBody(RefreshTokenDTO),
       this.controller.refreshToken,
     )
 
     this._router.post(
       '/login',
+      RequestLimiter(8),
       Validate.inBody(UserLoginDTO),
       this.controller.login,
     )
