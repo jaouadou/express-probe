@@ -6,6 +6,7 @@
  */
 
 import { Router } from 'express'
+import { RequestLimiter } from '../middleware'
 
 export abstract class RouterBase {
   protected _router: Router
@@ -24,9 +25,15 @@ export abstract class RouterBase {
 export class ApiRouter extends RouterBase {
   private routers: RouterBase[]
 
-  constructor(prefix: string, routers: RouterBase[]) {
+  constructor(prefix: string, routers: RouterBase[], config?: {
+    addRequestLimiter?: boolean,
+    maxRequestPerMinute?: number,
+  }) {
     super(prefix)
     this.routers = routers
+    if (config?.addRequestLimiter) {
+      this._router.use(RequestLimiter(config.maxRequestPerMinute))
+    }
     this.addRouters()
   }
 

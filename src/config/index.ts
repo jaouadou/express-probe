@@ -10,6 +10,7 @@
 import * as path from 'path'
 import dotenv from 'dotenv'
 import { getOsEnv } from './utils'
+import { parseToBool } from '../utils'
 
 dotenv.config({
   path: path.resolve(__dirname, `../../.env.${process.env.NODE_ENV}`),
@@ -26,6 +27,8 @@ export default {
   api: {
     CACHE_SECONDS: Number(getOsEnv('CACHE_SECONDS', '20')),
     DEFAULT_PAGINATION_LIMIT: Number(getOsEnv('DEFAULT_PAGINATION_LIMIT', '50')),
+    CACHE_REQUESTS: parseToBool(getOsEnv('CACHE_REQUESTS', 'false')),
+    MAX_REQUEST_PER_MINUTE: Number(getOsEnv('MAX_REQUEST_PER_MINUTE', '60')),
   },
   db: {
     URL: getOsEnv('NODE_ENV') === 'test'
