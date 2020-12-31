@@ -30,21 +30,27 @@ export class Controller {
   public filter: GenericObject
 
   constructor(
-    public service: Service,
+    public _service: Service,
     options: controllerOptions,
   ) {
-    this.service = service
+    this._service = _service
     this.name = options.name
     this.queryField = options.queryField || 'id'
     this.queryIn = options.queryIn || 'params'
     this.addUserOnCreate = options.addUserOnCreate || false
     this.filter = options.aditionalFilter || {}
+
+    this.list = this.list.bind(this)
+    this.retrieve = this.retrieve.bind(this)
+    this.create = this.create.bind(this)
+    this.patchOrUpdate = this.patchOrUpdate.bind(this)
+    this.delete = this.delete.bind(this)
   }
 
   async list(req: Request, res: Response, next: NextFunction) {
     try {
       const { query } = req
-      const data = await this.service.getMany({ ...query, ...this.filter })
+      const data = await this._service.getMany({ ...query, ...this.filter })
       return successResponse(req, res, data, httpStatus.ok, `${this.name}s retrieved`)
     } catch (error) {
       return next(error)
@@ -54,7 +60,7 @@ export class Controller {
   async retrieve(req: Request, res: Response, next: NextFunction) {
     try {
       const query = this._getQueryFilter(req)
-      const data = await this.service.getOne({ ...query, ...this.filter })
+      const data = await this._service.getOne({ ...query, ...this.filter })
       return successResponse(req, res, data, httpStatus.ok, `${this.name} retrieved`)
     } catch (error) {
       return next(error)
@@ -68,7 +74,7 @@ export class Controller {
         const { user } = req
         DTO = { ...DTO, user: user?._id }
       }
-      const data = await this.service.insert(DTO)
+      const data = await this._service.insert(DTO)
       return successResponse(req, res, data, httpStatus.created, `${this.name} created`)
     } catch (error) {
       return next(error)
@@ -79,7 +85,7 @@ export class Controller {
     try {
       const { body: DTO } = req
       const query = this._getQueryFilter(req)
-      const data = await this.service.update(DTO, { ...query, ...this.filter })
+      const data = await this._service.update(DTO, { ...query, ...this.filter })
       return successResponse(req, res, data, httpStatus.ok, `${this.name} updated`)
     } catch (error) {
       return next(error)
@@ -89,7 +95,7 @@ export class Controller {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const query = this._getQueryFilter(req)
-      await this.service.delete(query)
+      await this._service.delete(query)
       return successResponse(req, res, {}, httpStatus.ok, `${this.name} deleted`)
     } catch (error) {
       return next(error)

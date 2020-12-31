@@ -11,31 +11,28 @@ export abstract class RouterBase {
   protected _router: Router
   public path: string
 
-  constructor(path: string, router: Router) {
-    this._router = router
+  constructor(path: string) {
+    this._router = Router()
     this.path = path
-    this.initializeRouter()
   }
 
   get router() {
     return this._router
   }
-
-  initializeRouter() {}
 }
 
 export class ApiRouter extends RouterBase {
-  public prefix: string
-  private routers: Router[]
+  private routers: RouterBase[]
 
-  constructor(config : { prefix: string, routers: Router[] }) {
-    super('', Router())
-    this.prefix = config.prefix
-    this.routers = config.routers
+  constructor(prefix: string, routers: RouterBase[]) {
+    super(prefix)
+    this.routers = routers
     this.addRouters()
   }
 
   addRouters() {
-    this.routers.forEach((router) => this._router.use('', router))
+    this.routers.forEach((router) => {
+      this._router.use(`${this.path}/${router.path}`, router.router)
+    })
   }
 }
