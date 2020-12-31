@@ -36,7 +36,7 @@ export class Service {
   async getMany(reqQuery: Request['query']) {
     try {
       const { skip, limit } = this._getSkipLimit(reqQuery)
-      const key = this._buildListKey(skip, limit)
+      const key = this._buildListKey(skip, limit, reqQuery)
       let items = await this.cache.get(key)
       if (!items) {
         items = await this._model.find(reqQuery).skip(skip).limit(limit)
@@ -127,9 +127,10 @@ export class Service {
     return query
   }
 
-  protected _buildListKey(skip: number, limit: number): string {
+  protected _buildListKey(skip: number, limit: number, query: Request['query']): string {
     let key = `${skip}`
     if (limit) key += `_${limit}`
+    Object.keys(query).forEach((queryParam) => { key += `_${queryParam}` })
     return key
   }
 
