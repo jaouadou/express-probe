@@ -1,10 +1,10 @@
 /**
- * User interfaces.
- * ----------------
+ * User interface.
+ * ---------------
  */
 
 import { Types, Document } from 'mongoose'
-import { scopes } from '../../auth'
+import { scopes } from '../../../auth'
 
 export interface IUserProps {
   _id: Types.ObjectId,
@@ -31,5 +31,5 @@ export interface IUserFullDocument extends IUserDocument {
 }
 
 export interface IUser extends IUserDocument {
-  comparePassword(): boolean
+  comparePassword(password: string): Promise<boolean>
 }

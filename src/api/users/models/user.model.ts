@@ -9,7 +9,10 @@ import { IUserFullDocument, IUser } from '../interfaces'
 import { scopes } from '../../../auth'
 import { ApiError } from '../../../lib'
 
-const UserSchema: Schema = new mongoose.Schema({
+/**
+ * Schema
+ */
+const UserSchema: Schema = new Schema({
   name: { type: String, required: true },
   lastname: { type: String, default: '' },
   email: { type: String, required: true },
@@ -17,7 +20,7 @@ const UserSchema: Schema = new mongoose.Schema({
   phoneNumber: { type: String, default: '' },
   picture: { type: String, default: '' },
   type: { type: String, enum: scopes, default: scopes.USER },
-  isActivre: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: false },
 },
 {
   timestamps: true,
@@ -30,35 +33,48 @@ const UserSchema: Schema = new mongoose.Schema({
   },
 })
 
+/**
+ * Index
+ */
+UserSchema.index({ email: 1 })
+
+/**
+ * Virtuals
+ */
+UserSchema.virtual('id').get(function(this: IUserFullDocument) {
+  return String(this._id)
+})
+
 UserSchema.virtual('fullName').get(function(this: IUserFullDocument) {
   return this.name + ' ' + this.lastname
 })
 
+/**
+ * Methods
+ */
 UserSchema.methods.comparePassword = async function(password: string) {
   const match = await bcrypt.compare(password, this.password)
   return match
 }
 
+/**
+ * Middlewares
+ */
 UserSchema.pre<IUserFullDocument>('save', async function(next) {
-  if (this.isModified('password')) {
-    try {
+  try {
+    if (this.isModified('password')) {
       const saltRound = await bcrypt.genSalt(10)
       const hash = await bcrypt.hash(this.password, saltRound)
       this.password = hash
-      next()
-    } catch (error) {
-      next(error)
     }
-  }
-  if (this.isModified('email')) {
-    try {
+    if (this.isModified('email')) {
       const db = mongoose.connection.db
       const emailExists = await db.collection('users').findOne({ email: this.email })
       if (emailExists) ApiError.raise.conflict('email already exists')
-      next()
-    } catch (error) {
-      next(error)
     }
+    next()
+  } catch (error) {
+    next(error)
   }
 })
 
