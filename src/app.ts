@@ -15,7 +15,7 @@ import mongoSanitize from 'express-mongo-sanitize'
 import compression from 'compression'
 import { centralErrorHandler, notFoundHandler, requestLogger } from './middleware'
 import { ApiRouter } from './core'
-// import { DB } from './db'
+import { DB } from './db'
 import config from './config'
 import { Logger } from './lib'
 import { IUserProps } from './api/users'
@@ -33,8 +33,7 @@ class App {
   constructor(routers: ApiRouter[]) {
     this.app = express()
 
-    // DB.connect()
-
+    this.intializeDB()
     this.initializeParsers()
     this.initializeMiddlewares()
     this.initializeRouters(routers)
@@ -49,6 +48,10 @@ class App {
     this.app.listen(config.app.PORT, () => {
       Logger.info(`App launching 🚀 on port: ${config.app.PORT}`)
     })
+  }
+
+  private async intializeDB() {
+    await DB.connect()
   }
 
   private initializeRouters(routers: ApiRouter[]) {

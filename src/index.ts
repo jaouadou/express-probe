@@ -5,8 +5,11 @@
 
 import App from './app'
 import { ErrorHandler } from './lib'
+import { ApiRouterV1 } from './api'
 
-const app = new App([])
+const app = new App([
+  ApiRouterV1,
+])
 
 if (require.main) {
   process.on('uncaughtException', ErrorHandler.handleFatalError)
