@@ -14,10 +14,10 @@ export class ErrorHandler {
     if (!(error instanceof ApiError)) {
       error = new ApiError(500, errorObject.message, {})
       await error.toOperational()
+      await error.logError()
     }
-    await error.logError()
-    await error.sendEmailIfOperational()
 
+    await error.sendEmailIfOperational()
     return error
   }
 
