@@ -60,7 +60,7 @@ export class Controller {
   async retrieve(req: Request, res: Response, next: NextFunction) {
     try {
       const query = this._getQueryFilter(req)
-      const data = await this._service.getOne({ ...query, ...this.filter })
+      const data = await this._service.getOne(query)
       return successResponse(req, res, data, httpStatus.ok, `${this.name} retrieved`)
     } catch (error) {
       return next(error)
@@ -85,7 +85,7 @@ export class Controller {
     try {
       const { body: DTO } = req
       const query = this._getQueryFilter(req)
-      const data = await this._service.update(DTO, { ...query, ...this.filter })
+      const data = await this._service.update(DTO, query)
       return successResponse(req, res, data, httpStatus.ok, `${this.name} updated`)
     } catch (error) {
       return next(error)
@@ -109,6 +109,6 @@ export class Controller {
   ) {
     const field = queryField
     const pkValue = req[queryIn][field]
-    return { [field]: pkValue }
+    return { [field]: pkValue, ...this.filter }
   }
 }
