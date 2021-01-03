@@ -60,7 +60,7 @@ export class Controller {
   async retrieve(req: Request, res: Response, next: NextFunction) {
     try {
       const query = this._getQueryFilter(req)
-      const data = await this._service.getOne(query)
+      const data = await this._service.getOne(query, req.user)
       return successResponse(req, res, data, httpStatus.ok, `${this.name} retrieved`)
     } catch (error) {
       return next(error)
@@ -83,9 +83,9 @@ export class Controller {
 
   async patchOrUpdate(req: Request, res: Response, next: NextFunction) {
     try {
-      const { body: DTO } = req
+      const { body: DTO, user } = req
       const query = this._getQueryFilter(req)
-      const data = await this._service.update(DTO, query)
+      const data = await this._service.update(DTO, query, user)
       return successResponse(req, res, data, httpStatus.ok, `${this.name} updated`)
     } catch (error) {
       return next(error)
@@ -95,7 +95,7 @@ export class Controller {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const query = this._getQueryFilter(req)
-      await this._service.delete(query)
+      await this._service.delete(query, req.user)
       return successResponse(req, res, {}, httpStatus.ok, `${this.name} deleted`)
     } catch (error) {
       return next(error)
