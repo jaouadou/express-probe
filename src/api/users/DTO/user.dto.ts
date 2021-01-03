@@ -6,14 +6,12 @@
  * user validation input.
  */
 
-import { scopes } from '../../../auth'
 import {
   IsEmail,
   IsString,
   IsNotEmpty,
   IsPhoneNumber,
   Length,
-  IsEnum,
   IsOptional,
 } from 'class-validator'
 
