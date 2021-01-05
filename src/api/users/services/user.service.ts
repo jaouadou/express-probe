@@ -26,17 +26,17 @@ export class UserService extends Service {
   }
 
   async createAdmin(userDTO: UserSignupDTO) {
-    return this.insert({ ...userDTO, type: scopes.ADMIN, isActive: true })
+    return super.insert({ ...userDTO, type: scopes.ADMIN, isActive: true })
   }
 
   async createSuperAdmin(userDTO: UserSignupDTO) {
-    return this.insert({ ...userDTO, type: scopes.SUPER_ADMIN, isActive: true })
+    return super.insert({ ...userDTO, type: scopes.SUPER_ADMIN, isActive: true })
   }
 
   async signup(userDTO: UserSignupDTO) {
     try {
-      const user = await this.model.create(userDTO as unknown as IUser)
-      this.emmiter.emmitCreated(user.email)
+      const user = await super.insert(userDTO)
+      this.emmiter.emmitCreated(user.email, user.name)
       return user
     } catch (error) {
       this.logger.error('Error on signup new user', error)
