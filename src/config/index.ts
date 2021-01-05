@@ -47,5 +47,7 @@ export default {
   mailing: {
     API_KEY: getOsEnv('MAILGUN_API_KEY'),
     DOMAIN: getOsEnv('MAILGUN_DOMAIN'),
+    FROM_EMAIL: getOsEnv('MAILGUN_DOMAIN', 'example@samples.mailgun.org'),
+    FROM_EMAIL_NAME: getOsEnv('FROM_EMAIL_NAME', 'My App'),
   },
 }
