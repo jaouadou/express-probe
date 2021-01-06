@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile.dev
-    env_file: .env
+    env_file: .env.development
     environment:
      - NODE_ENV=test
     volumes:
@@ -19,7 +19,7 @@ services:
     command: >
       bash -c "npx jest
       --verbose
-      --coverage 
+      --coverage
       --collectCoverage
       --coverageReporters=html"
   db:

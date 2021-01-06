@@ -3,10 +3,10 @@ services:
   api:
     container_name: api
     image: node_api
-    build: 
+    build:
       context: .
       dockerfile: ./docker/Dockerfile.prod
-    env_file: .env
+    env_file: .env.production
     restart: on-failure
     volumes:
       - .:/usr/src/
