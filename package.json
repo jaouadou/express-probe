@@ -4,7 +4,7 @@
   "main": "index.ts",
   "license": "MIT",
   "scripts": {
-    "start": "node --expose-gc --trace-gc --trace-gc-ignore-scavenger --node-options='--require=perf_hooks' dist/index.js",
+    "start": "node --expose-gc --trace-gc --trace-gc-ignore-scavenger dist/src/index.js",
     "dev": "npx nodemon",
     "dev:clean": "rimraf dist && tsx watch src/index.ts",
     "build": "tsc -p . && tsc-alias",

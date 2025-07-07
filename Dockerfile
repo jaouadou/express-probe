@@ -10,7 +10,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 COPY tsconfig*.json ./
-COPY .env.example ./.env
+COPY .env ./.env
 
 # Install dependencies
 RUN npm ci
