@@ -36,7 +36,7 @@ COPY --from=builder --chown=appuser:appgroup /app/.env ./
 # Switch to non-root user
 USER appuser
 
-EXPOSE 4300
+EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s \
