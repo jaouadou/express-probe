@@ -12,8 +12,8 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]),
   JWT_SECRET: z.string().min(32),
   REFRESH_TOKEN_SECRET: z.string().min(32),
-  JWT_EXPIRY: z.string().regex(/^\d+[smhd]$/),
-  REFRESH_TOKEN_EXPIRY: z.string().regex(/^\d+[smhd]$/),
+  JWT_EXPIRY: z.string(),
+  REFRESH_TOKEN_EXPIRY: z.string(),
   FRONTEND_URL: z.string().url(),
   SMTP_HOST: process.env.NODE_ENV === "development" ? z.string().optional() : z.string(),
   SMTP_PORT: process.env.NODE_ENV === "development" ? z.string().transform(Number).optional() : z.string().transform(Number),
@@ -35,7 +35,7 @@ if (process.env.NODE_ENV === 'production') {
     'SMTP_USER',
     'SMTP_PASSWORD'
   ];
-  
+
   requiredFields.forEach(field => {
     if (!process.env[field]) {
       throw new Error(`Missing required env variable: ${field}`);

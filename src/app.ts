@@ -30,15 +30,15 @@ const setupMiddleware = (app: express.Application) => {
   app.use(requestId);
   setupSecurityHeaders(app as express.Express);
   app.use(cors({ origin: ENV.FRONTEND_URL, credentials: true }));
-  
+
   // Performance
   app.use(compressionMiddleware);
   app.use(express.json({ limit: "10kb" }));
-  
+
   // Monitoring
   app.use(loggingMiddleware);
   app.use(metricsMiddleware);
-  
+
   // Rate Limiting
   app.use("/api/auth", authLimiter);
   app.use("/api", apiLimiter);
@@ -48,7 +48,8 @@ setupMiddleware(app);
 
 // Routes
 app.get("/", (req, res) => {
-  res.json({ message: "🚀 Hello from express-boilerplate Backend!" });
+  console.log("headers: ", req.headers);
+  res.json({ message: "🚀 Hello from express-boilerplate Backend!", headers: req.headers });
 });
 
 // Health Check

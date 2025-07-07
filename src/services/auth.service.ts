@@ -11,10 +11,10 @@ import { EmailService } from "./email.service";
 const prisma = new PrismaClient();
 
 export class AuthService {
-  private emailService: EmailService;
+  // private emailService: EmailService;
 
   constructor() {
-    this.emailService = new EmailService();
+    // this.emailService = new EmailService();
   }
 
   private generateVerificationToken(): string {
@@ -49,7 +49,7 @@ export class AuthService {
     });
 
     // Send verification email
-    await this.emailService.sendVerificationEmail(email, name, verificationToken);
+    // await this.emailService.sendVerificationEmail(email, name, verificationToken);
 
     return user;
   }
@@ -103,7 +103,7 @@ export class AuthService {
   async resendVerificationEmail(email: string) {
     // Clean up expired tokens first
     await this.cleanupExpiredTokens();
-    
+
     const user = await prisma.user.findUnique({
       where: { email }
     });
@@ -129,11 +129,11 @@ export class AuthService {
       },
     });
 
-    await this.emailService.sendVerificationEmail(
-      user.email,
-      user.name,
-      verificationToken
-    );
+    // await this.emailService.sendVerificationEmail(
+    //   user.email,
+    //   user.name,
+    //   verificationToken
+    // );
 
     return { message: "Verification email sent" };
   }
@@ -301,11 +301,11 @@ export class AuthService {
     });
 
     try {
-      await this.emailService.sendPasswordResetEmail(
-        user.email,
-        user.name,
-        resetToken
-      );
+      // await this.emailService.sendPasswordResetEmail(
+      //   user.email,
+      //   user.name,
+      //   resetToken
+      // );
       return { message: "Password reset email sent" };
     } catch (error) {
       // If email fails, clear the reset token
