@@ -13,7 +13,7 @@ COPY tsconfig*.json ./
 COPY .env.example ./.env
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy source code
 COPY . .
@@ -42,4 +42,4 @@ EXPOSE 4300
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s \
   CMD wget --no-verbose --tries=1 --spider http://localhost:4300/health || exit 1
 
-CMD ["npm", "start"] 
+CMD ["npm", "start"]
