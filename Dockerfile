@@ -38,8 +38,4 @@ USER appuser
 
 EXPOSE 8080
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=30s \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:4300/health || exit 1
-
 CMD ["npm", "start"]
