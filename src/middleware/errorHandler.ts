@@ -1,23 +1,37 @@
-/**
- * Central error handler middleware.
- * ---------------------------------
- *
- * All error must be passed trhough next function
- * to this middleware to be handle properly and
- * return a homegenized error response.
- *
- */
+import { Request, Response, NextFunction } from "express";
+import { AppError } from "@/utils/appError";
+import { ApiResponse } from "@/utils/apiResponse";
+import { logger } from "@/config/logger";
+import { MetricsService } from "@/services/metrics.service";
 
-import { Request, Response, NextFunction } from 'express'
-import { ErrorHandler, ApiError } from '../lib'
-import { errorResponse, ErrorResponse } from '../core'
+const metricsService = new MetricsService();
 
-export const centralErrorHandler = async (
-  err: ApiError,
+export const errorHandler = (
+  error: Error,
   req: Request,
   res: Response,
-  next: NextFunction,
-): Promise<ErrorResponse> => {
-  const error = await ErrorHandler.handlError(err)
-  return errorResponse(req, res, error)
-}
+  _next: NextFunction
+): void => {
+  logger.error({
+    message: error.message,
+    stack: error.stack,
+    context: "ErrorHandler",
+  });
+
+  const statusCode = error instanceof AppError ? error.statusCode : 500;
+  const route = req.route?.path || req.path || "/unknown";
+  
+  metricsService.recordHttpRequest(
+    req.method,
+    route,
+    statusCode,
+    0
+  );
+
+  if (error instanceof AppError) {
+    ApiResponse.error(res, error.message, error.statusCode);
+    return;
+  }
+
+  ApiResponse.error(res, "Internal server error", 500);
+};

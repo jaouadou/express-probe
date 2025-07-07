@@ -1,82 +1,106 @@
-/**
- * Server APP configuration.
- * -------------------------
- *
- * This class handle all express server
- * configuration.
- * Middlewares, routes and handlers are intialized
- * by this class.
- */
+import express from "express";
+import { ENV } from "@/config/env";
+import userRoutes from "@/routes/user.routes";
+import authRoutes from "@/routes/auth.routes";
+import { errorHandler } from "@/middleware/errorHandler";
+import { setupSecurityHeaders } from "@/middleware/securityHeaders";
+import { apiLimiter } from "@/middleware/rateLimiter";
+import { authLimiter } from "@/middleware/rateLimiter";
+import cors from "cors";
+import { requestId } from "@/middleware/requestId";
+import { loggingMiddleware } from "@/middleware/loggingMiddleware";
+import { compressionMiddleware } from "@/middleware/performanceMiddleware";
+import { cache } from "@/middleware/cacheMiddleware";
+import { metricsMiddleware } from "@/middleware/monitoringMiddleware";
+import monitoringRoutes from "@/routes/monitoring.routes";
+import { ErrorMonitoringService } from "@/services/errorMonitoring.service";
+import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
+import swaggerUi from 'swagger-ui-express';
+import { specs } from './docs/swagger';
+import { notFoundHandler } from './middleware/notFound';
 
-import express from 'express'
-import helmet from 'helmet'
-import cors from 'cors'
-import mongoSanitize from 'express-mongo-sanitize'
-import compression from 'compression'
-import { centralErrorHandler, notFoundHandler, requestLogger } from './middleware'
-import { ApiRouter } from './core'
-import { DB } from './db'
-import config from './config'
-import { Logger } from './lib'
-import { IUserProps } from './api/users'
+const app = express();
 
-declare module 'express' {
-  // eslint-disable-next-line no-unused-vars
-  interface Request {
-    user?: IUserProps
-  }
-}
+// Initialize error monitoring
+ErrorMonitoringService.getInstance();
 
-class App {
-  public app: express.Application
+// Group middleware by function
+const setupMiddleware = (app: express.Application) => {
+  // Security
+  app.use(requestId);
+  setupSecurityHeaders(app as express.Express);
+  app.use(cors({ origin: ENV.FRONTEND_URL, credentials: true }));
+  
+  // Performance
+  app.use(compressionMiddleware);
+  app.use(express.json({ limit: "10kb" }));
+  
+  // Monitoring
+  app.use(loggingMiddleware);
+  app.use(metricsMiddleware);
+  
+  // Rate Limiting
+  app.use("/api/auth", authLimiter);
+  app.use("/api", apiLimiter);
+};
 
-  constructor(routers: ApiRouter[]) {
-    this.app = express()
+setupMiddleware(app);
 
-    this.intializeDB()
-    this.initializeParsers()
-    this.initializeMiddlewares()
-    this.initializeRouters(routers)
-    this.addErrorHandling()
-  }
+// Routes
+app.get("/", (req, res) => {
+  res.json({ message: "🚀 Hello from express-boilerplate Backend!" });
+});
 
-  public getServer() {
-    return this.app
-  }
+// Health Check
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    timestamp: new Date(),
+    uptime: process.uptime(),
+    memoryUsage: process.memoryUsage(),
+  });
+});
 
-  public listen() {
-    this.app.listen(config.app.PORT, () => {
-      Logger.info(`App launching 🚀 on port: ${config.app.PORT}`)
-    })
-  }
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
-  private async intializeDB() {
-    await DB.connect()
-  }
+// Move Swagger docs before error handler
+const swaggerOptions = {
+  explorer: true,
+  swaggerOptions: {
+    persistAuthorization: true,
+    displayRequestDuration: true,
+    docExpansion: 'none',
+    filter: true,
+    showExtensions: true,
+    showCommonExtensions: true,
+    tryItOutEnabled: true
+  },
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: "Express TypeScript API Documentation"
+};
 
-  private initializeRouters(routers: ApiRouter[]) {
-    routers.forEach((router) => {
-      this.app.use('/', router.router)
-    })
-  }
+// Move monitoring routes before error handler
+app.use("/api/monitoring", monitoringRoutes);
 
-  private initializeParsers() {
-    this.app.use(compression())
-    this.app.use(express.json())
-    this.app.use(express.urlencoded({ extended: true }))
-  }
+// Add Swagger documentation route at root level
+app.use('/api-docs', swaggerUi.serve);
+app.get('/api-docs', swaggerUi.setup(specs, swaggerOptions));
 
-  private initializeMiddlewares() {
-    this.app.use(requestLogger())
-    this.app.use(cors())
-    this.app.use(helmet())
-    this.app.use(mongoSanitize())
-  }
+// Error Handler should be last
+const errorMiddleware: ErrorRequestHandler = (err, req, res, next) => {
+  return errorHandler(err, req, res, next);
+};
 
-  private addErrorHandling() {
-    this.app.use(notFoundHandler)
-    this.app.use(centralErrorHandler)
-  }
-}
+app.use(errorMiddleware);
 
-export default App
+// Move cache middleware before error handler
+app.use("/api/users", cache({ duration: 300 }));
+
+// Monitoring routes
+app.use("/monitoring", monitoringRoutes);
+
+// Add this as the last middleware (before error handler)
+app.use(notFoundHandler);
+
+export default app;
